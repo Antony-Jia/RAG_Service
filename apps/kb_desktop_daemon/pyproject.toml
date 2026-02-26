@@ -1,0 +1,28 @@
+[project]
+name = "kb-desktop-daemon"
+version = "0.1.0"
+description = "Desktop host app for kb_core"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115.6",
+  "uvicorn>=0.34.0",
+  "python-multipart>=0.0.20",
+  "pydantic>=2.10.4",
+  "pydantic-settings>=2.7.1",
+  "python-dotenv>=1.0.1",
+  "chromadb>=0.5.23",
+  "requests>=2.32.3",
+  "pypdf>=5.1.0",
+  "python-docx>=1.1.2",
+  "kb-core",
+]
+
+[project.scripts]
+kb-desktop-daemon = "kb_desktop_daemon.main:main"
+
+[tool.uv.sources]
+kb-core = { workspace = true }
+
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"

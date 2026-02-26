@@ -1,0 +1,12 @@
+[project]
+name = "kb-core"
+version = "0.1.0"
+description = "Reusable RAG core business package"
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.10.4",
+]
+
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"

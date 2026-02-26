@@ -1,0 +1,66 @@
+openapi: 3.1.0
+info:
+  title: KB Desktop API
+  version: 0.1.0
+paths:
+  /healthz:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+  /api/v1/capabilities:
+    get:
+      summary: Capabilities
+      responses:
+        "200":
+          description: Capabilities payload
+  /api/v1/collections:
+    get:
+      summary: List collections
+      responses:
+        "200": { description: OK }
+    post:
+      summary: Create collection
+      responses:
+        "200": { description: OK }
+  /api/v1/ingest/upload:
+    post:
+      summary: Upload and ingest a document
+      responses:
+        "200": { description: Job accepted }
+  /api/v1/retrieve:
+    post:
+      summary: Retrieve chunks
+      responses:
+        "200": { description: Retrieve result }
+  /api/v1/documents/{document_id}:
+    delete:
+      summary: Delete document
+      parameters:
+        - in: path
+          name: document_id
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Delete job accepted }
+  /api/v1/jobs:
+    get:
+      summary: List jobs
+      responses:
+        "200": { description: OK }
+  /api/v1/jobs/{job_id}:
+    get:
+      summary: Get job detail
+      parameters:
+        - in: path
+          name: job_id
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: OK }
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

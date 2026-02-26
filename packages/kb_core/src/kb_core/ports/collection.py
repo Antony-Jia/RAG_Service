@@ -1,0 +1,13 @@
+from typing import Protocol
+
+from kb_core.models import Collection
+
+
+class CollectionStore(Protocol):
+    def create_collection(self, collection: Collection) -> Collection: ...
+
+    def get_collection(self, collection_id: str) -> Collection | None: ...
+
+    def list_collections(self, limit: int, offset: int) -> list[Collection]: ...
+
+    def delete_collection(self, collection_id: str) -> None: ...

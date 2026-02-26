@@ -1,0 +1,21 @@
+[project]
+name = "kb-server"
+version = "0.1.0"
+description = "Server host skeleton for kb_core"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115.6",
+  "uvicorn>=0.34.0",
+  "pydantic-settings>=2.7.1",
+  "kb-core",
+]
+
+[project.scripts]
+kb-server = "kb_server.main:main"
+
+[tool.uv.sources]
+kb-core = { workspace = true }
+
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"

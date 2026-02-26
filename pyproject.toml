@@ -1,0 +1,50 @@
+[project]
+name = "rag-service-monorepo"
+version = "0.1.0"
+description = "Monorepo for reusable RAG engine across desktop and server hosts"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.uv.workspace]
+members = [
+  "packages/kb_core",
+  "apps/kb_desktop_daemon",
+  "apps/kb_server",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3.4",
+  "pytest-cov>=6.0.0",
+  "ruff>=0.8.4",
+  "mypy>=1.14.1",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "packages/kb_core/src",
+  "apps/kb_desktop_daemon/src",
+  "apps/kb_server/src",
+]
+addopts = "-q"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = false
+warn_unused_configs = true
+strict_optional = true
+check_untyped_defs = false
+ignore_missing_imports = true
+disable_error_code = ["arg-type", "attr-defined", "no-any-return", "import-untyped"]
+mypy_path = [
+  "packages/kb_core/src",
+  "apps/kb_desktop_daemon/src",
+  "apps/kb_server/src",
+]
