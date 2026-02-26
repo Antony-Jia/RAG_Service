@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import mimetypes
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
@@ -16,6 +17,12 @@ from kb_desktop_daemon.config import Settings
 from kb_desktop_daemon.http.api import build_api_router
 from kb_desktop_daemon.http.context import AppContext
 from kb_desktop_daemon.http.worker import JobWorker
+
+
+# On some Windows environments, registry mappings can cause ".js" to resolve
+# to "text/plain", which breaks ES module loading in modern browsers.
+mimetypes.add_type("text/javascript", ".js")
+mimetypes.add_type("text/javascript", ".mjs")
 
 
 def create_app(settings: Settings | None = None, auth_token: str | None = None) -> FastAPI:

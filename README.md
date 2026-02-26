@@ -25,7 +25,7 @@
 ```json
 {"port": 8899, "token": "...", "base_url": "http://127.0.0.1:8899"}
 ```
-同时保存到 `~/.openanywork/kb/daemon.json`。
+同时保存到 `~/.openwork/kb/daemon.json`。
 
 ## 认证
 所有 `/api/*` 路由需要：
