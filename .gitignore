@@ -10,3 +10,5 @@ apps/kb_admin_ui/node_modules/
 apps/kb_admin_ui/dist/
 apps/kb_admin_ui/build/
 .env
+build/
+dist/

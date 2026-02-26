@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     chunk_size: int = 800
     chunk_overlap: int = 120
 
-    daemon_state_dir: str = Field(default="~/.openanywork/kb")
+    daemon_state_dir: str = Field(default="~/.openwork/kb")
 
     @property
     def data_dir(self) -> Path:
