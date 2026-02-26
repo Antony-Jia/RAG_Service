@@ -328,6 +328,32 @@ class SQLiteRepository:
             for row in rows
         ]
 
+    def list_chunks_by_document(self, document_id: str, limit: int, offset: int) -> list[Chunk]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT * FROM chunks
+                WHERE document_id = ?
+                ORDER BY chunk_order ASC
+                LIMIT ? OFFSET ?
+                """,
+                (document_id, limit, offset),
+            ).fetchall()
+        return [
+            Chunk(
+                id=row["id"],
+                collection_id=row["collection_id"],
+                document_id=row["document_id"],
+                text=row["text"],
+                token_count=row["token_count"],
+                order=row["chunk_order"],
+                metadata=self._loads(row["metadata_json"]),
+                embedding_ref=row["embedding_ref"],
+                created_at=self._dt(row["created_at"]),
+            )
+            for row in rows
+        ]
+
     def delete_chunks_by_document(self, document_id: str) -> None:
         with self._lock, self._connect() as conn:
             conn.execute("DELETE FROM chunks WHERE document_id = ?", (document_id,))

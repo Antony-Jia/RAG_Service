@@ -177,3 +177,32 @@ def delete_document(
     vector_index.delete_by_document(collection_id=collection_id, document_id=document_id)
     chunk_store.delete_chunks_by_document(document_id)
     document_store.delete_document(document_id)
+
+
+def get_document_original(
+    *,
+    document_id: str,
+    document_store: DocumentStore,
+    blob_store: BlobStore,
+    parsers: Iterable[Parser],
+) -> tuple[Document, str, dict]:
+    document = document_store.get_document(document_id)
+    if document is None:
+        raise ValueError(f"Document not found: {document_id}")
+
+    blob = BlobRef(id=document.id, path=document.blob_ref, name=document.title, mime=document.mime)
+    parser = _select_parser(parsers, mime=document.mime, filename=document.title)
+    # Ensure blob exists/readable and parse content consistently with ingest parser adapters.
+    blob_store.get(blob)
+    parsed = parser.parse(blob, ParseOptions())
+    return document, parsed.text, parsed.metadata
+
+
+def list_document_chunks(
+    *,
+    document_id: str,
+    chunk_store: ChunkStore,
+    limit: int,
+    offset: int,
+) -> list[Chunk]:
+    return chunk_store.list_chunks_by_document(document_id=document_id, limit=limit, offset=offset)

@@ -24,6 +24,16 @@ paths:
       summary: Create collection
       responses:
         "200": { description: OK }
+  /api/v1/collections/{collection_id}/documents:
+    get:
+      summary: List documents for a collection
+      parameters:
+        - in: path
+          name: collection_id
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Collection documents response }
   /api/v1/ingest/upload:
     post:
       summary: Upload and ingest a document
@@ -44,6 +54,26 @@ paths:
           schema: { type: string }
       responses:
         "200": { description: Delete job accepted }
+  /api/v1/documents/{document_id}/original:
+    get:
+      summary: View original parsed text for a document
+      parameters:
+        - in: path
+          name: document_id
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Original content response }
+  /api/v1/documents/{document_id}/chunks:
+    get:
+      summary: View chunks for a document
+      parameters:
+        - in: path
+          name: document_id
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Chunk list response }
   /api/v1/jobs:
     get:
       summary: List jobs

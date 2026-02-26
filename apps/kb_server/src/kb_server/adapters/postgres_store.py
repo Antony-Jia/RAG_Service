@@ -25,6 +25,9 @@ class PostgresStore:
     def get_chunks(self, chunk_ids: list[str]) -> list[Chunk]:
         raise NotImplementedError
 
+    def list_chunks_by_document(self, document_id: str, limit: int, offset: int) -> list[Chunk]:
+        raise NotImplementedError
+
     def delete_chunks_by_document(self, document_id: str) -> None:
         raise NotImplementedError
 

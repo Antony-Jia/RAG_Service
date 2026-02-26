@@ -7,7 +7,13 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile
 from kb_core.models import Collection, IngestOptions, Job, JobStatus, JobType, MetadataFilter
-from kb_core.pipelines import delete_document, ingest_document, retrieve
+from kb_core.pipelines import (
+    delete_document,
+    get_document_original,
+    ingest_document,
+    list_document_chunks,
+    retrieve,
+)
 
 from kb_desktop_daemon.http.auth import require_auth
 from kb_desktop_daemon.http.schemas import (
@@ -38,6 +44,9 @@ def build_api_router() -> APIRouter:
                 "retrieve": True,
                 "ingest_upload": True,
                 "metadata_filter_equals": True,
+                "list_collection_documents": True,
+                "view_document_original": True,
+                "view_document_chunks": True,
             },
         )
 
@@ -68,6 +77,25 @@ def build_api_router() -> APIRouter:
         if collection is None:
             raise HTTPException(status_code=404, detail="Collection not found")
         return collection.model_dump()
+
+    @router.get("/collections/{collection_id}/documents")
+    def list_collection_documents(
+        collection_id: str,
+        request: Request,
+        limit: int = Query(default=200, ge=1, le=2000),
+        offset: int = Query(default=0, ge=0),
+    ) -> dict[str, Any]:
+        ctx = request.app.state.ctx
+        collection = ctx.repo.get_collection(collection_id)
+        if collection is None:
+            raise HTTPException(status_code=404, detail="Collection not found")
+        documents = ctx.repo.list_documents(collection_id=collection_id, limit=limit, offset=offset)
+        return {
+            "collection": collection.model_dump(),
+            "documents": [doc.model_dump() for doc in documents],
+            "limit": limit,
+            "offset": offset,
+        }
 
     @router.delete("/collections/{collection_id}")
     def delete_collection(collection_id: str, request: Request) -> dict[str, bool]:
@@ -179,6 +207,48 @@ def build_api_router() -> APIRouter:
 
         ctx.worker.submit(job.id, _task)
         return DeleteResponse(job_id=job.id)
+
+    @router.get("/documents/{document_id}/original")
+    def view_document_original(document_id: str, request: Request) -> dict[str, Any]:
+        ctx = request.app.state.ctx
+        try:
+            document, text, parse_metadata = get_document_original(
+                document_id=document_id,
+                document_store=ctx.repo,
+                blob_store=ctx.blob_store,
+                parsers=ctx.parsers,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        return {
+            "document": document.model_dump(),
+            "text": text,
+            "parse_metadata": parse_metadata,
+        }
+
+    @router.get("/documents/{document_id}/chunks")
+    def view_document_chunks(
+        document_id: str,
+        request: Request,
+        limit: int = Query(default=200, ge=1, le=2000),
+        offset: int = Query(default=0, ge=0),
+    ) -> dict[str, Any]:
+        ctx = request.app.state.ctx
+        document = ctx.repo.get_document(document_id)
+        if document is None:
+            raise HTTPException(status_code=404, detail="Document not found")
+        chunks = list_document_chunks(
+            document_id=document_id,
+            chunk_store=ctx.repo,
+            limit=limit,
+            offset=offset,
+        )
+        return {
+            "document": document.model_dump(),
+            "chunks": [chunk.model_dump() for chunk in chunks],
+            "limit": limit,
+            "offset": offset,
+        }
 
     @router.get("/jobs")
     def list_jobs(
